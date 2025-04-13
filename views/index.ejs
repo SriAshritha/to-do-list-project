@@ -1,0 +1,282 @@
+<%- include('partials/header.ejs'); -%>
+
+<div class="box" id="heading">
+  <h1>
+    <%= listTitle %>
+  </h1>
+  <div class="user-controls">
+    <!-- Use conditional to avoid reference error -->
+    <% if (typeof user !== 'undefined') { %>
+      <span class="postgres-display">Welcome, <%= user.username %></span>
+    <% } else { %>
+      <span class="postgres-display">Welcome</span>
+    <% } %>
+    <a href="/logout" class="logout-button">Logout</a>
+  </div>
+</div>
+
+<div class="tab-container">
+  <button class="tab-button active" onclick="openTab('daily', this)">Daily</button>
+  <button class="tab-button" onclick="openTab('weekly', this)">Weekly</button>
+  <button class="tab-button" onclick="openTab('monthly', this)">Monthly</button>
+  <button class="tab-button" onclick="openTab('habits', this)">Habits</button>
+</div>
+
+<!-- Daily Tasks Tab -->
+<div class="box tab-content" id="daily">
+  <h2>Daily Tasks</h2>
+  <% for(let item of listItems){%>
+    <% if(item.category === 'daily') { %>
+      <div class="item animate-in">
+        <form action="/delete" method="post">
+          <input type="checkbox" onchange="this.form.submit()" name="deleteItemId" value="<%= item.id %>">
+        </form>
+
+        <div class="item-details">
+          <p id="title<%=item.id%>">
+            <%= item.title %>
+          </p>
+          <span class="due-date">
+            <% if(item.due_date) { %>
+              Due: <%= new Date(item.due_date).toLocaleDateString() %>
+            <% } else { %>
+              No due date
+            <% } %>
+          </span>
+        </div>
+
+        <form class="edit" action="/edit" method="post">
+          <input type="hidden" name="updatedItemId" value="<%= item.id %>">
+          <input id="input<%=item.id%>" type="text" name="updatedItemTitle" value="<%= item.title %>" autocomplete="off"
+            autofocus="true" hidden="true" />
+          <input id="date<%=item.id%>" type="date" name="updatedItemDate" value="<%= item.due_date ? item.due_date.toISOString().split('T')[0] : '' %>" hidden="true" />
+          <button id="done<%=item.id%>" class="edit" type="submit" hidden><img class="icon"
+              src="/assets/icons/check-solid.svg" alt="tick image"></button>
+        </form>
+        <button id="edit<%=item.id%>" class="edit" onclick="handler('<%=item.id%>')"><img class="icon"
+            src="/assets/icons/pencil.svg" alt="pencil image"></button>
+      </div>
+    <% } %>
+  <% } %>
+
+  <form class="item" action="/add" method="post">
+    <input type="text" name="newItem" placeholder="New Task" autocomplete="off" autofocus="true" />
+    <input type="date" name="itemDate" />
+    <input type="hidden" name="category" value="daily" />
+    <button class="add" type="submit" name="list" value="<%= listTitle %>">+</button>
+  </form>
+</div>
+
+<!-- Weekly Tasks Tab -->
+<div class="box tab-content" id="weekly" style="display:none;">
+  <h2>Weekly Tasks</h2>
+  <% for(let item of listItems){%>
+    <% if(item.category === 'weekly') { %>
+      <div class="item animate-in">
+        <form action="/delete" method="post">
+          <input type="checkbox" onchange="this.form.submit()" name="deleteItemId" value="<%= item.id %>">
+        </form>
+
+        <div class="item-details">
+          <p id="title<%=item.id%>">
+            <%= item.title %>
+          </p>
+          <span class="due-date">
+            <% if(item.due_date) { %>
+              Due: <%= new Date(item.due_date).toLocaleDateString() %>
+            <% } else { %>
+              No due date
+            <% } %>
+          </span>
+        </div>
+
+        <form class="edit" action="/edit" method="post">
+          <input type="hidden" name="updatedItemId" value="<%= item.id %>">
+          <input id="input<%=item.id%>" type="text" name="updatedItemTitle" value="<%= item.title %>" autocomplete="off"
+            autofocus="true" hidden="true" />
+          <input id="date<%=item.id%>" type="date" name="updatedItemDate" value="<%= item.due_date ? item.due_date.toISOString().split('T')[0] : '' %>" hidden="true" />
+          <button id="done<%=item.id%>" class="edit" type="submit" hidden><img class="icon"
+              src="/assets/icons/check-solid.svg" alt="tick image"></button>
+        </form>
+        <button id="edit<%=item.id%>" class="edit" onclick="handler('<%=item.id%>')"><img class="icon"
+            src="/assets/icons/pencil.svg" alt="pencil image"></button>
+      </div>
+    <% } %>
+  <% } %>
+
+  <form class="item" action="/add" method="post">
+    <input type="text" name="newItem" placeholder="New Task" autocomplete="off" autofocus="true" />
+    <input type="date" name="itemDate" />
+    <input type="hidden" name="category" value="weekly" />
+    <button class="add" type="submit" name="list" value="<%= listTitle %>">+</button>
+  </form>
+</div>
+
+<!-- Monthly Tasks Tab -->
+<div class="box tab-content" id="monthly" style="display:none;">
+  <h2>Monthly Tasks</h2>
+  <% for(let item of listItems){%>
+    <% if(item.category === 'monthly') { %>
+      <div class="item animate-in">
+        <form action="/delete" method="post">
+          <input type="checkbox" onchange="this.form.submit()" name="deleteItemId" value="<%= item.id %>">
+        </form>
+
+        <div class="item-details">
+          <p id="title<%=item.id%>">
+            <%= item.title %>
+          </p>
+          <span class="due-date">
+            <% if(item.due_date) { %>
+              Due: <%= new Date(item.due_date).toLocaleDateString() %>
+            <% } else { %>
+              No due date
+            <% } %>
+          </span>
+        </div>
+
+        <form class="edit" action="/edit" method="post">
+          <input type="hidden" name="updatedItemId" value="<%= item.id %>">
+          <input id="input<%=item.id%>" type="text" name="updatedItemTitle" value="<%= item.title %>" autocomplete="off"
+            autofocus="true" hidden="true" />
+          <input id="date<%=item.id%>" type="date" name="updatedItemDate" value="<%= item.due_date ? item.due_date.toISOString().split('T')[0] : '' %>" hidden="true" />
+          <button id="done<%=item.id%>" class="edit" type="submit" hidden><img class="icon"
+              src="/assets/icons/check-solid.svg" alt="tick image"></button>
+        </form>
+        <button id="edit<%=item.id%>" class="edit" onclick="handler('<%=item.id%>')"><img class="icon"
+            src="/assets/icons/pencil.svg" alt="pencil image"></button>
+      </div>
+    <% } %>
+  <% } %>
+
+  <form class="item" action="/add" method="post">
+    <input type="text" name="newItem" placeholder="New Task" autocomplete="off" autofocus="true" />
+    <input type="date" name="itemDate" />
+    <input type="hidden" name="category" value="monthly" />
+    <button class="add" type="submit" name="list" value="<%= listTitle %>">+</button>
+  </form>
+</div>
+
+<!-- Habits Tab -->
+<div class="box tab-content" id="habits" style="display:none;">
+  <h2>Habit Tracker</h2>
+ 
+  <!-- Habit List -->
+  <% if(typeof habits !== 'undefined' && habits.length > 0) { %>
+    <% for(let habit of habits) { %>
+      <div class="item animate-in habit-item">
+        <form action="/toggle-habit" method="post" class="habit-toggle">
+          <input type="checkbox"
+                 onchange="this.form.submit()"
+                 name="habitId"
+                 value="<%= habit.id %>"
+                 <%= habit.completed_today > 0 ? 'checked' : '' %>>
+        </form>
+
+        <div class="item-details">
+          <p><%= habit.title %></p>
+          <div class="habit-details">
+            <span class="habit-days">
+              <%= ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+                  .filter((day, index) => habit[day.toLowerCase()])
+                  .join(', ') %>
+            </span>
+            <span class="habit-streak">
+              Current Streak: <%= habit.current_streak %>
+              | Longest Streak: <%= habit.longest_streak %>
+            </span>
+          </div>
+        </div>
+
+        <form action="/delete-habit" method="post" class="delete-habit">
+          <input type="hidden" name="habitId" value="<%= habit.id %>">
+          <button type="submit" class="edit delete-habit-btn">
+            <img class="icon" src="/assets/icons/trash.png" alt="delete">
+          </button>
+        </form>
+      </div>
+    <% } %>
+  <% } else { %>
+    <div class="no-habits-message">No habits created yet. Add your first habit below!</div>
+  <% } %>
+
+  <!-- Add New Habit Form -->
+  <form class="item" action="/add-habit" method="post">
+    <div class="habit-input-container">
+      <input type="text" name="habitTitle" placeholder="Habit Name" required autocomplete="off" />
+      <input type="text" name="habitDescription" placeholder="Description (optional)" autocomplete="off" />
+     
+      <div class="habit-days-selector">
+        <label>
+          <input type="checkbox" name="habitDays" value="monday"> M
+        </label>
+        <label>
+          <input type="checkbox" name="habitDays" value="tuesday"> T
+        </label>
+        <label>
+          <input type="checkbox" name="habitDays" value="wednesday"> W
+        </label>
+        <label>
+          <input type="checkbox" name="habitDays" value="thursday"> T
+        </label>
+        <label>
+          <input type="checkbox" name="habitDays" value="friday"> F
+        </label>
+        <label>
+          <input type="checkbox" name="habitDays" value="saturday"> S
+        </label>
+        <label>
+          <input type="checkbox" name="habitDays" value="sunday"> S
+        </label>
+      </div>
+ 
+      <button class="add" type="submit">+</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function handler(id) {
+    document.getElementById("title" + id).setAttribute("hidden", true);
+    document.getElementById("edit" + id).setAttribute("hidden", true);
+    document.getElementById("done" + id).removeAttribute("hidden");
+    document.getElementById("input" + id).removeAttribute("hidden");
+    document.getElementById("date" + id).removeAttribute("hidden");
+  }
+
+  function openTab(tabName, element) {
+    // Hide all tab contents
+    const tabContents = document.getElementsByClassName("tab-content");
+    for (let i = 0; i < tabContents.length; i++) {
+      tabContents[i].style.display = "none";
+    }
+   
+    // Remove active class from all tab buttons
+    const tabButtons = document.getElementsByClassName("tab-button");
+    for (let i = 0; i < tabButtons.length; i++) {
+      tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+    }
+   
+    // Show the selected tab and add active class to the button
+    document.getElementById(tabName).style.display = "block";
+    element.className += " active";
+   
+    // Apply animation to items when tab is opened
+    const items = document.querySelectorAll("#" + tabName + " .item");
+    items.forEach((item, index) => {
+      setTimeout(() => {
+        item.classList.add("visible");
+      }, index * 100);
+    });
+  }
+
+  // Initialize the first tab
+  document.addEventListener("DOMContentLoaded", function() {
+    // Get the first tab button and call openTab with it
+    const firstTabButton = document.querySelector(".tab-button");
+    if (firstTabButton) {
+      openTab('daily', firstTabButton);
+    }
+  });
+</script>
+<%- include('partials/footer.ejs'); -%>
