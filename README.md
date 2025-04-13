@@ -118,4 +118,6 @@ To work with the database in this project:
 4. **Run Application**: The app will automatically set up the required schema
 5. **Database Maintenance**: Use PostgreSQL tools for database backups and maintenance
 
+Team Branding: The footer is named "Tikey" representing our team name and identity
+
 The application demonstrates proper separation of concerns, with database operations making it maintainable and extensible.
